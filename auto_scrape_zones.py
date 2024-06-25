@@ -9,6 +9,7 @@ def save_json(data):
     print('Data has been saved to zones.json')
 
 def main():
+    zone_info = []
     URL = 'https://algona.municipal.codes'
 
     headers = {
@@ -39,14 +40,17 @@ def main():
             request = requests.get(link, headers=headers)
             soup = BeautifulSoup(request.content, 'html.parser')
 
-            title = soup.find('span', class_="name").getText(strip=True)
-            description = soup.find('p').getText(strip=True)
+            for title_el in soup.find_all('span', class_="name"):
+                num = soup.find('span', class_='num').getText(strip=True)
+                title = title_el.getText(strip=True)
+                description = soup.find('article').getText(strip=True)
+                zone_info = {
+                    "number": num,
+                    "title": title,
+                    "description": description
+                }
+                zones.append(zone_info)
 
-            zone_info = {
-                "title": title,
-                "description": description,
-            }
-            zones.append(zone_info)
         save_json(zones)
 
 
